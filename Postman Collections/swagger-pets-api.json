@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "110e796b-c7ef-4352-9383-47c0fb77c5d1",
+		"name": "Swagger-Pets",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create_New Pet",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "027f63de-4144-4457-8b23-b6e5a88116e3",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "30d31e71-5ede-4159-8857-1449b2e9404f",
+						"exec": [
+							"var res = JSON.parse(responseBody);\r",
+							"var new_pet_ID = res.id;\r",
+							"var new_pet_category = res.category.name;\r",
+							"\r",
+							"pm.environment.set(\"pet_ID\", new_pet_ID);\r",
+							"pm.environment.set(\"pet_Category\", new_pet_category);\r",
+							"console.log(new_pet_ID, new_pet_category);\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify created pet\", function () {\r",
+							"    var response = JSON.parse(responseBody);\r",
+							"    var request =  JSON.parse(pm.request.body.raw);\r",
+							"\r",
+							"    pm.expect(response.category.name).to.eql(request.category.name);\r",
+							"    pm.expect(response.tags[0]).to.deep.equal(request.tags[0]);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "1a6800cd-b189-41f1-9eaf-bb05d966076e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 135,\r\n    \"category\": {\r\n        \"id\": 0,\r\n        \"name\": \"Scottish Fold\"\r\n    },\r\n    \"name\": \"Nice Kitty\",\r\n    \"photoUrls\": [\r\n        \"https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTirTLZGJkc8CsFcR-FTUBvCuK0oW4Qlbi5zSZqfjdo8HBf8xWkrYv9M2QP0Ekpc9HGXe8l39aQZx95Od8\"\r\n    ],\r\n    \"tags\": [\r\n        {\r\n            \"id\": 12,\r\n            \"name\": \"USA\"\r\n        }\r\n    ],\r\n    \"status\": \"available\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_URL}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc529df9-1374-4ad8-bb21-151c0e5919df",
+						"exec": [
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    var petCategory = pm.environment.get(\"pet_Category\");\r",
+							"    pm.expect(pm.response.text()).to.include(petCategory);\r",
+							"    console.log(petCategory);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "29dfcdb0-2280-4004-b2de-2320fef7405d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_URL}}/{{pet_ID}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update_Pet",
+			"_postman_id": "d878ea6b-5090-4fe8-a9bb-f11440f7f7fa",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": {{pet_ID}},\r\n    \"category\": {\r\n        \"id\": 0,\r\n        \"name\": \"string\"\r\n    },\r\n    \"name\": \"Red_Kitty\",\r\n    \"photoUrls\": [\r\n        \"string\"\r\n    ],\r\n    \"tags\": [\r\n        {\r\n            \"id\": 0,\r\n            \"name\": \"string\"\r\n        }\r\n    ],\r\n    \"status\": \"available\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_URL}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Pets_by_Status",
+			"_postman_id": "12143949-1e78-43eb-b276-6bb74523a4a3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_URL}}/findByStatus?status={{status}}",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"findByStatus"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "{{status}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order_Pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "63a8fae2-72b8-4960-9fe2-0d31b16bde6d",
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "f61f6d46-351a-4dd6-ae8e-9342065cd709",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": {}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1234,\r\n  \"petId\": 100,\r\n  \"quantity\": 0,\r\n  \"shipDate\": \"2023-07-04T11:54:16.874Z\",\r\n  \"status\": \"placed\",\r\n  \"complete\": true\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": "{{pet_order_URL}}"
+			},
+			"response": []
+		}
+	]
+}
